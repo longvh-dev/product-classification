@@ -16,6 +16,9 @@ from utils import text_preprocess
 
 
 def get_args():
+    """
+    Function to get arguments for the script execution. These arguments include paths, flags for preprocessing, training and evaluation.
+    """
     parser = argparse.ArgumentParser()
 
     # dataset
@@ -34,6 +37,10 @@ def get_args():
     return args
 
 def load_data(path):
+    """
+    Function to get arguments for the script execution. These arguments include paths, flags for preprocessing
+    training and evaluation.
+    """
     print('Loading data from', path)
     f = open(path, "r")
     products, categories = [], []
@@ -51,12 +58,18 @@ def load_data(path):
 
 
 def split_data(df, test_percent, random_state):
+    """
+    Function to split the data into training and testing sets.
+    """
     X_train, X_test, y_train, y_test = train_test_split(
         df['products'], df['categories'], test_size=test_percent, random_state=random_state)
     return X_train, X_test, y_train, y_test
 
 
 def encode_target(y_train, y_test):
+    """
+    Function to encode target labels into numerical form.
+    """
     # encode target
     label_encoder = LabelEncoder()
     label_encoder.fit(y_train)
@@ -70,6 +83,9 @@ def encode_target(y_train, y_test):
 
 # train naive bayes model
 def train_naive_bayes(X_train, y_train, model_path):
+    """
+    Function to train a Naive Bayes model and save it to a specified path.
+    """
     start_time = time.time()
     print('Start training Naive Bayes model...')
     text_clf = Pipeline([('vect', CountVectorizer(ngram_range=(1, 1),
@@ -88,6 +104,9 @@ def train_naive_bayes(X_train, y_train, model_path):
 
 
 def evaluate(X_test, y_test, model_path):
+    """
+    Function to evaluate the performance of the trained models.
+    """
     # Naive Bayes
     nb_model = pickle.load(open(os.path.join(model_path, "naive_bayes.pkl"), 'rb'))
     y_pred = nb_model.predict(X_test)
@@ -97,38 +116,6 @@ def evaluate(X_test, y_test, model_path):
     svm_model = pickle.load(open(os.path.join(model_path, "svm.pkl"), 'rb'))
     y_pred = svm_model.predict(X_test)
     print('SVM, Accuracy =', np.mean(y_pred == y_test))
-
-
-
-# ----------------------------------------------------------
-# train svm model
-
-# start_time = time.time()
-# text_clf = Pipeline([('vect', CountVectorizer(ngram_range=(1, 1),
-#                                               max_df=0.8,
-#                                               max_features=None)),
-#                      ('tfidf', TfidfTransformer()),
-#                      ('clf', SVC(gamma='scale'))
-#                      ])
-# text_clf = text_clf.fit(X_train, y_train)
-
-# train_time = time.time() - start_time
-# print('Done training SVM in', train_time, 'seconds.')
-
-# # Save model
-# pickle.dump(text_clf, open(os.path.join(MODEL_PATH, "svm.pkl"), 'wb'))
-
-
-# # Naive Bayes
-# nb_model = pickle.load(open(os.path.join(MODEL_PATH, "naive_bayes.pkl"), 'rb'))
-# y_pred = nb_model.predict(X_test)
-# print('Naive Bayes, Accuracy =', np.mean(y_pred == y_test))
-#
-# # SVM
-# svm_model = pickle.load(open(os.path.join(MODEL_PATH, "svm.pkl"), 'rb'))
-# y_pred = svm_model.predict(X_test)
-# print('SVM, Accuracy =', np.mean(y_pred == y_test))
-
 
 def main():
     args = get_args()
