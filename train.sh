@@ -3,7 +3,7 @@ set -e
 pythonpath='python'
 
 
-${pythonpath} main.py \
+${pythonpath} train.py \
             --data_path data/data.txt \
             --test_percent 0.2 \
             --random_state 42 \

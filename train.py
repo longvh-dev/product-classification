@@ -134,16 +134,16 @@ def main():
     X_train, X_test, y_train, y_test = split_data(df, args.test_percent, args.random_state)
 
     # X_train = text_preprocess(X_train)
-    # if args.is_preprocess:
-    #     print('Preprocessing data...')
-    #     X_train = [text_preprocess(x) for x in X_train]
+    if args.is_preprocess:
+        print('Preprocessing data...')
+        X_train = [text_preprocess(x) for x in X_train]
 
-    # y_train, y_test = encode_target(args, y_train, y_test)
+    y_train, y_test = encode_target(args, y_train, y_test)
 
-    # if args.is_train:
-    #     train_naive_bayes(X_train, y_train, args.model_path)
-    # if args.is_evaluate:
-    #     evaluate(X_test, y_test, args.model_path)
+    if args.is_train:
+        train_naive_bayes(X_train, y_train, args.model_path)
+    if args.is_evaluate:
+        evaluate(X_test, y_test, args.model_path)
 
 if __name__ == "__main__":
     main()
