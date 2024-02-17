@@ -22,15 +22,15 @@ def get_args():
     parser = argparse.ArgumentParser()
 
     # dataset
-    parser.add_argument('--data_path', type=str, default='../data/data.txt')
+    parser.add_argument('--data_path', type=str, default='data/train.txt')
     parser.add_argument('--test_percent', type=float, default=0.2)
     parser.add_argument('--random_state', type=int, default=42)
 
     # save
-    parser.add_argument('--model_path', type=str, default='../save')
+    parser.add_argument('--model_path', type=str, default='save')
 
     # others
-    parser.add_argument('--is_preprocess', type=bool, default=True)
+    parser.add_argument('--is_preprocess', type=bool, default=False)
     parser.add_argument('--is_train', type=bool, default=True)
     parser.add_argument('--is_evaluate', type=bool, default=True)
     args = parser.parse_args()
@@ -66,14 +66,21 @@ def split_data(df, test_percent, random_state):
     return X_train, X_test, y_train, y_test
 
 
-def encode_target(y_train, y_test):
+def save_vectorizer(vectorizer, path):
+    """
+    Function to save the vectorizer as a pickle file.
+    """
+    with open(path, 'wb') as file:
+        pickle.dump(vectorizer, file)
+
+def encode_target(args, y_train, y_test):
     """
     Function to encode target labels into numerical form.
     """
-    # encode target
     label_encoder = LabelEncoder()
     label_encoder.fit(y_train)
 
+    save_vectorizer(label_encoder, os.path.join(args.model_path, "label_encoder.pkl"))
     # print(list(label_encoder.classes_)[0:5], 'n')
 
     y_train = label_encoder.transform(y_train)
@@ -81,7 +88,6 @@ def encode_target(y_train, y_test):
     return y_train, y_test
 
 
-# train naive bayes model
 def train_naive_bayes(X_train, y_train, model_path):
     """
     Function to train a Naive Bayes model and save it to a specified path.
@@ -119,6 +125,7 @@ def evaluate(X_test, y_test, model_path):
 
 def main():
     args = get_args()
+    print(args)
 
     data = load_data(args.data_path)
     df = pd.DataFrame(list(zip(data[0], data[1])),
@@ -131,12 +138,12 @@ def main():
     #     print('Preprocessing data...')
     #     X_train = [text_preprocess(x) for x in X_train]
 
-    y_train, y_test = encode_target(y_train, y_test)
+    # y_train, y_test = encode_target(args, y_train, y_test)
 
-    if args.is_train:
-        train_naive_bayes(X_train, y_train, args.model_path)
-    if args.is_evaluate:
-        evaluate(X_test, y_test, args.model_path)
+    # if args.is_train:
+    #     train_naive_bayes(X_train, y_train, args.model_path)
+    # if args.is_evaluate:
+    #     evaluate(X_test, y_test, args.model_path)
 
 if __name__ == "__main__":
     main()
